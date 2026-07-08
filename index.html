@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kyatto Sky — Video Editor</title>
+  <meta name="description" content="Portfolio de Kyatto Sky — Video Editor & Content Creator" />
+  <meta property="og:title" content="Kyatto Sky — Video Editor" />
+  <meta property="og:description" content="Video editing para creadores de contenido y marcas." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+  /* ── Reset & Variables ─────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sky:        #090912;
+    --sky-up:     #0f0b1e;
+    --gold:       #c9a84c;
+    --gold-dim:   rgba(201, 168, 76, 0.2);
+    --gold-faint: rgba(201, 168, 76, 0.07);
+    --lavender:   #ede6ff;
+    --text:       #b8a8e0;
+    --muted:      #60508a;
+    --muted2:     #9070c0;
+    --card-bg:    rgba(255, 255, 255, 0.04);
+    --border:     rgba(201, 168, 76, 0.2);
+    --serif:      'Cinzel', serif;
+    --body:       'Crimson Text', Georgia, serif;
+    --nav-h:      64px;
+    --trans:      0.22s ease;
+    --max-w:      1100px;
+    --pad:        clamp(20px, 5vw, 60px);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--sky);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--sky); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+  ::selection { background: rgba(201, 168, 76, 0.2); color: var(--lavender); }
+
+  /* ── Canvas ─────────────────────────────────────────────────── */
+  #stars {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── Layout ─────────────────────────────────────────────────── */
+  nav, main, footer { position: relative; z-index: 1; }
+
+  .container {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 var(--pad);
+  }
+
+  section { border-bottom: 0.5px solid var(--gold-dim); }
+  section:last-of-type { border-bottom: none; }
+
+  /* ── Section headers ─────────────────────────────────────────── */
+  .eyebrow {
+    font-family: var(--serif);
+    font-size: 0.6rem;
+    letter-spacing: 0.45em;
+    color: var(--muted);
+    display: block;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: var(--lavender);
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 56px;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    display: block;
+    width: 70px;
+    height: 0.5px;
+    background: var(--gold-dim);
+  }
+  .divider span { font-size: 9px; color: var(--gold); letter-spacing: 4px; }
+
+  /* ── Nav ─────────────────────────────────────────────────────── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    height: var(--nav-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--pad);
+    background: rgba(9, 9, 18, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 0.5px solid var(--gold-dim);
+  }
+
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 0.78rem;
+    letter-spacing: 0.28em;
+    color: var(--lavender);
+    text-decoration: none;
+    transition: color var(--trans);
+  }
+  .nav-logo:hover { color: var(--gold); }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: var(--serif);
+    font-size: 0.6rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color var(--trans);
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+
+  /* ── Hero ─────────────────────────────────────────────────────── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: calc(var(--nav-h) + 40px) var(--pad) 80px;
+  }
+
+  .hero-badge {
+    font-family: var(--serif);
+    font-size: 0.58rem;
+    letter-spacing: 0.5em;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .hero-badge::before, .hero-badge::after {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 0.5px;
+    background: var(--gold-dim);
+  }
+
+  .hero-name {
+    font-family: var(--serif);
+    font-size: clamp(3rem, 9vw, 6rem);
+    font-weight: 700;
+    color: var(--lavender);
+    letter-spacing: 0.1em;
+    line-height: 1.05;
+    margin-bottom: 18px;
+  }
+
+  .hero-tagline {
+    font-family: var(--body);
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    font-style: italic;
+    color: var(--muted2);
+    letter-spacing: 0.1em;
+    margin-bottom: 48px;
+  }
+
+  .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+
+  .btn {
+    font-family: var(--serif);
+    font-size: 0.6rem;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 13px 30px;
+    border-radius: 2px;
+    transition: background var(--trans), border-color var(--trans),
+                color var(--trans), transform var(--trans);
+    cursor: pointer;
+    display: inline-block;
+    border: 0.5px solid;
+  }
+  .btn-primary { border-color: var(--gold); color: var(--gold); background: transparent; }
+  .btn-primary:hover { background: rgba(201,168,76,.1); transform: translateY(-2px); }
+  .btn-secondary { border-color: var(--muted); color: var(--muted); background: transparent; }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+
+  .hero-scroll {
+    margin-top: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.35;
+    animation: ks-bob 3s ease-in-out infinite;
+  }
+  .hero-scroll span {
+    font-family: var(--serif);
+    font-size: 0.52rem;
+    letter-spacing: 0.35em;
+    color: var(--muted);
+  }
+  .hero-scroll-bar { width: 0.5px; height: 42px; background: var(--gold-dim); }
+  @keyframes ks-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(9px); } }
+
+  /* ── Trabajos ─────────────────────────────────────────────────── */
+  #trabajos { padding: 100px 0; }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .project-card {
+    display: block;
+    background: var(--card-bg);
+    border: 0.5px solid var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+    text-decoration: none;
+    transition: border-color var(--trans), transform var(--trans);
+  }
+  .project-card:hover { border-color: var(--gold); transform: translateY(-5px); }
+
+  .card-thumb {
+    position: relative;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--sky-up);
+  }
+  .card-thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform var(--trans);
+  }
+  .project-card:hover .card-thumb img { transform: scale(1.05); }
+
+  .card-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(9,9,18,.5);
+    opacity: 0;
+    transition: opacity var(--trans);
+    font-size: 2.2rem;
+    color: rgba(237,230,255,.9);
+  }
+  .project-card:hover .card-play { opacity: 1; }
+
+  .card-body { padding: 16px 18px 20px; }
+
+  .badge {
+    font-family: var(--serif);
+    font-size: 0.55rem;
+    letter-spacing: 0.14em;
+    padding: 3px 9px;
+    border-radius: 2px;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  .badge-gaming   { color: var(--gold);  border: 0.5px solid rgba(201,168,76,.4); }
+  .badge-inst     { color: #6aacdc;      border: 0.5px solid rgba(106,172,220,.4); }
+  .badge-content  { color: var(--muted2);border: 0.5px solid rgba(144,112,192,.4); }
+
+  .card-body h3 {
+    font-family: var(--serif);
+    font-size: 0.88rem;
+    color: var(--lavender);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin-bottom: 5px;
+  }
+  .card-body p { font-size: 0.9rem; color: var(--muted); }
+
+  /* ── Sobre mí ─────────────────────────────────────────────────── */
+  #sobre-mi { padding: 100px 0; }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.7fr;
+    gap: 64px;
+    align-items: center;
+  }
+
+  .about-photo {
+    aspect-ratio: 3/4;
+    border: 0.5px solid var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .about-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .about-photo-placeholder {
+    width: 100%; height: 100%;
+    background: var(--sky-up);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-family: var(--serif);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .about-text h2 {
+    font-family: var(--serif);
+    font-size: clamp(1.15rem, 2.5vw, 1.55rem);
+    color: var(--lavender);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-bottom: 22px;
+  }
+  .about-text p { color: var(--text); margin-bottom: 16px; font-size: 1.05rem; }
+
+  .skills-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 30px; }
+  .skill-tag {
+    font-family: var(--serif);
+    font-size: 0.55rem;
+    letter-spacing: 0.16em;
+    color: var(--gold);
+    border: 0.5px solid var(--gold-dim);
+    padding: 5px 12px;
+    border-radius: 2px;
+    transition: background var(--trans);
+  }
+  .skill-tag:hover { background: var(--gold-faint); }
+
+  /* ── Proceso ─────────────────────────────────────────────────── */
+  #proceso { padding: 100px 0; }
+
+  .process-track {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    position: relative;
+  }
+  .process-track::before {
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: 12.5%;
+    right: 12.5%;
+    height: 0.5px;
+    background: var(--gold-dim);
+    z-index: 0;
+  }
+
+  .step { text-align: center; position: relative; z-index: 1; }
+
+  .step-circle {
+    width: 56px; height: 56px;
+    border: 0.5px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    background: var(--sky);
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    color: var(--lavender);
+    transition: border-color var(--trans), color var(--trans);
+  }
+  .step:hover .step-circle { border-color: var(--gold); color: var(--gold); }
+
+  .step-label {
+    font-family: var(--serif);
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 10px;
+  }
+  .step p { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
+
+  /* ── Contacto ─────────────────────────────────────────────────── */
+  #contacto { padding: 100px 0; }
+
+  .contact-inner { max-width: 600px; margin: 0 auto; text-align: center; }
+  .contact-intro { color: var(--text); font-size: 1.1rem; font-style: italic; margin-bottom: 36px; }
+
+  .contact-email {
+    font-family: var(--serif);
+    font-size: clamp(0.9rem, 2.2vw, 1.3rem);
+    color: var(--lavender);
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 48px;
+    padding-bottom: 4px;
+    border-bottom: 0.5px solid var(--gold-dim);
+    transition: color var(--trans), border-color var(--trans);
+  }
+  .contact-email:hover { color: var(--gold); border-color: var(--gold); }
+
+  .social-links { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
+  .social-links a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--serif);
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color var(--trans);
+  }
+  .social-links a:hover { color: var(--gold); }
+  .social-links svg { width: 15px; height: 15px; fill: currentColor; flex-shrink: 0; }
+
+  /* ── Footer ─────────────────────────────────────────────────── */
+  footer {
+    border-top: 0.5px solid var(--gold-dim);
+    padding: 30px var(--pad);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  footer p {
+    font-family: var(--serif);
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+  }
+
+  /* ── Fade-in on scroll ───────────────────────────────────────── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── Responsive ──────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .nav-logo { font-size: 0.68rem; }
+    .nav-links { gap: 18px; }
+    .nav-links a { font-size: 0.55rem; letter-spacing: 0.2em; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .about-grid { grid-template-columns: 1fr; }
+    .about-photo { aspect-ratio: 1/1; max-width: 260px; margin: 0 auto; }
+    .process-track { grid-template-columns: 1fr 1fr; }
+    .process-track::before { display: none; }
+    footer { justify-content: center; text-align: center; }
+  }
+
+  @media (max-width: 500px) {
+    .nav-links { gap: 14px; }
+    .hero-cta { flex-direction: column; align-items: center; }
+    .process-track { grid-template-columns: 1fr 1fr; gap: 28px; }
+  }
+  </style>
+</head>
+
+<body>
+
+<!-- Star Canvas -->
+<canvas id="stars"></canvas>
+
+<!-- ─── Nav ──────────────────────────────────────────────────── -->
+<nav>
+  <a href="#hero" class="nav-logo">KYATTO SKY</a>
+  <ul class="nav-links">
+    <li><a href="#trabajos">Trabajos</a></li>
+    <li><a href="#sobre-mi">Sobre mí</a></li>
+    <li><a href="#proceso">Proceso</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ─── Hero ─────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-badge">✦ &nbsp; PORTFOLIO &nbsp; ✦</div>
+  <h1 class="hero-name">KYATTO SKY</h1>
+  <p class="hero-tagline">video editor &amp; content creator</p>
+  <div class="hero-cta">
+    <a href="#trabajos" class="btn btn-primary">Ver trabajos</a>
+    <a href="#contacto" class="btn btn-secondary">Contactar</a>
+  </div>
+  <div class="hero-scroll">
+    <span>SCROLL</span>
+    <div class="hero-scroll-bar"></div>
+  </div>
+</section>
+
+<!-- ─── Trabajos ─────────────────────────────────────────────── -->
+<section id="trabajos">
+  <div class="container">
+    <span class="eyebrow">✦ &nbsp; MIS PROYECTOS &nbsp; ✦</span>
+    <h2 class="section-title">Trabajos</h2>
+    <div class="divider"><span>✦ ✦ ✦</span></div>
+
+    <div class="projects-grid">
+
+      <!--
+        INSTRUCCIONES:
+        1. Reemplazá VIDEO_ID_X con el ID real de YouTube (lo que va después de ?v=)
+        2. Actualizá el badge, título y descripción de cada card
+        3. Las thumbnails se cargan automáticamente desde YouTube
+      -->
+
+      <a href="https://www.youtube.com/watch?v=VIDEO_ID_1" target="_blank" rel="noopener" class="project-card fade-in">
+        <div class="card-thumb">
+          <img src="https://img.youtube.com/vi/VIDEO_ID_1/maxresdefault.jpg" alt="Sprunki Series" loading="lazy">
+          <div class="card-play">▶</div>
+        </div>
+        <div class="card-body">
+          <span class="badge badge-gaming">GAMING</span>
+          <h3>Sprunki Series</h3>
+          <p>YouTube · Serie de gameplay editado</p>
+        </div>
+      </a>
+
+      <a href="https://www.youtube.com/watch?v=VIDEO_ID_2" target="_blank" rel="noopener" class="project-card fade-in">
+        <div class="card-thumb">
+          <img src="https://img.youtube.com/vi/VIDEO_ID_2/maxresdefault.jpg" alt="UNA Costa Rica" loading="lazy">
+          <div class="card-play">▶</div>
+        </div>
+        <div class="card-body">
+          <span class="badge badge-inst">INSTITUCIONAL</span>
+          <h3>UNA Costa Rica</h3>
+          <p>Edición institucional · Evento</p>
+        </div>
+      </a>
+
+      <a href="https://www.youtube.com/watch?v=VIDEO_ID_3" target="_blank" rel="noopener" class="project-card fade-in">
+        <div class="card-thumb">
+          <img src="https://img.youtube.com/vi/VIDEO_ID_3/maxresdefault.jpg" alt="Proyecto 3" loading="lazy">
+          <div class="card-play">▶</div>
+        </div>
+        <div class="card-body">
+          <span class="badge badge-content">CONTENT</span>
+          <h3>Nombre del Proyecto</h3>
+          <p>YouTube · Descripción breve</p>
+        </div>
+      </a>
+
+      <a href="https://www.youtube.com/watch?v=VIDEO_ID_4" target="_blank" rel="noopener" class="project-card fade-in">
+        <div class="card-thumb">
+          <img src="https://img.youtube.com/vi/VIDEO_ID_4/maxresdefault.jpg" alt="Proyecto 4" loading="lazy">
+          <div class="card-play">▶</div>
+        </div>
+        <div class="card-body">
+          <span class="badge badge-gaming">GAMING</span>
+          <h3>Nombre del Proyecto</h3>
+          <p>YouTube · Descripción breve</p>
+        </div>
+      </a>
+
+      <a href="https://www.youtube.com/watch?v=VIDEO_ID_5" target="_blank" rel="noopener" class="project-card fade-in">
+        <div class="card-thumb">
+          <img src="https://img.youtube.com/vi/VIDEO_ID_5/maxresdefault.jpg" alt="Proyecto 5" loading="lazy">
+          <div class="card-play">▶</div>
+        </div>
+        <div class="card-body">
+          <span class="badge badge-content">CONTENT</span>
+          <h3>Nombre del Proyecto</h3>
+          <p>YouTube · Descripción breve</p>
+        </div>
+      </a>
+
+      <a href="https://www.youtube.com/watch?v=VIDEO_ID_6" target="_blank" rel="noopener" class="project-card fade-in">
+        <div class="card-thumb">
+          <img src="https://img.youtube.com/vi/VIDEO_ID_6/maxresdefault.jpg" alt="Proyecto 6" loading="lazy">
+          <div class="card-play">▶</div>
+        </div>
+        <div class="card-body">
+          <span class="badge badge-inst">INSTITUCIONAL</span>
+          <h3>Nombre del Proyecto</h3>
+          <p>Descripción breve del proyecto</p>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── Sobre mí ──────────────────────────────────────────────── -->
+<section id="sobre-mi">
+  <div class="container">
+    <span class="eyebrow">✦ &nbsp; QUIÉN SOY &nbsp; ✦</span>
+    <h2 class="section-title">Sobre mí</h2>
+    <div class="divider"><span>✦ ✦ ✦</span></div>
+
+    <div class="about-grid fade-in">
+      <div class="about-photo">
+        <!-- Reemplazá esto con tu foto real:
+             <img src="foto.jpg" alt="Kyatto Sky"> -->
+        <div class="about-photo-placeholder">TU FOTO<br>AQUÍ</div>
+      </div>
+      <div class="about-text">
+        <h2>Hola, soy Kyatto Sky</h2>
+        <p>Video editor y content creator con foco en gaming, entretenimiento y proyectos de marca. Trabajo con YouTubers, marcas y productoras para darle vida a sus historias a través del video.</p>
+        <p>Tengo experiencia editando en Premiere Pro y After Effects, desde series de gaming con ritmo rápido hasta videos institucionales con narrativa limpia y profesional.</p>
+        <p>Si tenés un proyecto, te ayudo a que quede exactamente como lo imaginás — o mejor.</p>
+        <div class="skills-list">
+          <span class="skill-tag">PREMIERE PRO</span>
+          <span class="skill-tag">AFTER EFFECTS</span>
+          <span class="skill-tag">COLOR GRADING</span>
+          <span class="skill-tag">MOTION GRAPHICS</span>
+          <span class="skill-tag">GAMING CONTENT</span>
+          <span class="skill-tag">THUMBNAILS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Proceso ──────────────────────────────────────────────── -->
+<section id="proceso">
+  <div class="container">
+    <span class="eyebrow">✦ &nbsp; CÓMO TRABAJO &nbsp; ✦</span>
+    <h2 class="section-title">Mi Proceso</h2>
+    <div class="divider"><span>✦ ✦ ✦</span></div>
+
+    <div class="process-track">
+      <div class="step fade-in">
+        <div class="step-circle">I</div>
+        <span class="step-label">BRIEF</span>
+        <p>Entendemos el proyecto, el tono que buscás y los tiempos de entrega.</p>
+      </div>
+      <div class="step fade-in">
+        <div class="step-circle">II</div>
+        <span class="step-label">EDICIÓN</span>
+        <p>Armo un primer corte con la estructura, ritmo y estética del video.</p>
+      </div>
+      <div class="step fade-in">
+        <div class="step-circle">III</div>
+        <span class="step-label">REVISIÓN</span>
+        <p>Te mando el borrador, recibo tu feedback y ajusto todos los detalles.</p>
+      </div>
+      <div class="step fade-in">
+        <div class="step-circle">IV</div>
+        <span class="step-label">ENTREGA</span>
+        <p>Archivo final en el formato y resolución que necesitás, listo para subir.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Contacto ─────────────────────────────────────────────── -->
+<section id="contacto">
+  <div class="container">
+    <span class="eyebrow">✦ &nbsp; HABLEMOS &nbsp; ✦</span>
+    <h2 class="section-title">Contacto</h2>
+    <div class="divider"><span>✦ ✦ ✦</span></div>
+
+    <div class="contact-inner fade-in">
+      <p class="contact-intro">¿Tenés un proyecto? Escribime.</p>
+
+      <!-- Reemplazá con tu email real -->
+      <a href="mailto:tu@email.com" class="contact-email">tu@email.com</a>
+
+      <div class="social-links">
+
+        <a href="https://youtube.com/@TU_CANAL" target="_blank" rel="noopener" aria-label="YouTube">
+          <svg viewBox="0 0 24 24"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.55A3.02 3.02 0 0 0 .5 6.19C0 8.04 0 12 0 12s0 3.96.5 5.81a3.02 3.02 0 0 0 2.12 2.14C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14C24 15.96 24 12 24 12s0-3.96-.5-5.81zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/></svg>
+          YouTube
+        </a>
+
+        <a href="https://instagram.com/TU_USUARIO" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+          Instagram
+        </a>
+
+        <a href="https://x.com/TU_USUARIO" target="_blank" rel="noopener" aria-label="X">
+          <svg viewBox="0 0 24 24"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
+          X
+        </a>
+
+        <a href="https://tiktok.com/@TU_USUARIO" target="_blank" rel="noopener" aria-label="TikTok">
+          <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+          TikTok
+        </a>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ─── Footer ────────────────────────────────────────────────── -->
+<footer>
+  <p>© 2025 KYATTO SKY</p>
+  <p>VIDEO EDITOR &amp; CONTENT CREATOR</p>
+</footer>
+
+<!-- ─── JS ────────────────────────────────────────────────────── -->
+<script>
+/* === STAR CANVAS === */
+(function () {
+  const canvas = document.getElementById('stars');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const rng = (a, b) => Math.random() * (b - a) + a;
+
+  let W, H, stars, goldStars, nodes;
+
+  function init() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+
+    stars = Array.from({ length: 300 }, () => ({
+      x: rng(0, W), y: rng(0, H),
+      r: rng(0.2, 1.4),
+      a: rng(0.1, 0.85),
+      va: rng(0.0008, 0.003) * (Math.random() > .5 ? 1 : -1)
+    }));
+
+    goldStars = Array.from({ length: 20 }, () => ({
+      x: rng(0, W), y: rng(0, H),
+      r: rng(0.8, 2.0),
+      a: rng(0.25, 0.65),
+      va: rng(0.0006, 0.002) * (Math.random() > .5 ? 1 : -1)
+    }));
+
+    nodes = Array.from({ length: 24 }, () => ({
+      x: rng(0, W), y: rng(0, H)
+    }));
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    /* Constellation lines */
+    ctx.strokeStyle = 'rgba(201,168,76,0.07)';
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < nodes.length - 1; i++) {
+      const a = nodes[i], b = nodes[i + 1];
+      if (Math.hypot(b.x - a.x, b.y - a.y) < 260) {
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      }
+    }
+
+    /* Constellation node dots */
+    nodes.forEach(n => {
+      ctx.beginPath(); ctx.arc(n.x, n.y, 1.4, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(201,168,76,0.28)'; ctx.fill();
+    });
+
+    /* Stars */
+    stars.forEach(s => {
+      s.a += s.va;
+      if (s.a > 0.9 || s.a < 0.05) s.va *= -1;
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(210,198,255,${s.a})`; ctx.fill();
+    });
+
+    /* Gold accent stars */
+    goldStars.forEach(s => {
+      s.a += s.va;
+      if (s.a > 0.72 || s.a < 0.08) s.va *= -1;
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(201,168,76,${s.a})`; ctx.fill();
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(init, 150);
+  });
+
+  init();
+  requestAnimationFrame(draw);
+})();
+
+/* === SMOOTH SCROLL === */
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+
+/* === NAV ACTIVE ON SCROLL === */
+const sections  = document.querySelectorAll('section[id]');
+const navLinks  = document.querySelectorAll('.nav-links a');
+const navObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id);
+      });
+    }
+  });
+}, { threshold: 0.4 });
+sections.forEach(s => navObserver.observe(s));
+
+/* === FADE-IN ON SCROLL === */
+const fadeObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      fadeObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
+</script>
+
+</body>
+</html>
