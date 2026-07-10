@@ -701,7 +701,7 @@
 
     <div class="about-grid fade-in">
       <div class="about-photo">
-        <img src="https://i.ibb.co/FLyc64LZ/bg-web.png" alt="bg-web" alt="Kyatto Sky" loading="lazy">
+        <img src="https://i.ibb.co/FLyc64LZ/bg-web.png" alt="Kyatto Sky" loading="lazy">
       </div>
       <div class="about-text">
         <h2>Hola, soy Kyatto Sky</h2>
@@ -821,13 +821,20 @@
     targetX = curX = W / 2;
     targetY = curY = H / 2;
 
-    stars = Array.from({ length: 300 }, () => ({
-      x: rng(0, W), y: rng(0, H),
-      r: rng(0.2, 1.4),
-      a: rng(0.1, 0.85),
-      va: rng(0.0008, 0.003) * (Math.random() > .5 ? 1 : -1),
-      p: rng(0.015, 0.05)
-    }));
+    stars = Array.from({ length: 300 }, () => {
+      const p = rng(0.015, 0.05);
+      const isBack = p < 0.028; /* capa trasera: se mueve sola además del parallax */
+      return {
+        x: rng(0, W), y: rng(0, H),
+        r: rng(0.2, 1.4),
+        a: rng(0.1, 0.85),
+        va: rng(0.0008, 0.003) * (Math.random() > .5 ? 1 : -1),
+        p,
+        drift: isBack,
+        dvx: isBack ? rng(-0.035, 0.035) : 0,
+        dvy: isBack ? rng(-0.02, -0.06) : 0
+      };
+    });
 
     goldStars = Array.from({ length: 20 }, () => ({
       x: rng(0, W), y: rng(0, H),
@@ -839,7 +846,9 @@
 
     nodes = Array.from({ length: 24 }, () => ({
       x: rng(0, W), y: rng(0, H),
-      p: rng(0.01, 0.025)
+      p: rng(0.01, 0.025),
+      vx: rng(-0.04, 0.04),
+      vy: rng(-0.04, 0.04)
     }));
   }
 
@@ -851,6 +860,14 @@
     const dy = curY - H / 2;
 
     ctx.clearRect(0, 0, W, H);
+
+    /* Drift the back layer (constellation) on its own, independent of the mouse */
+    nodes.forEach(n => {
+      n.x += n.vx;
+      n.y += n.vy;
+      if (n.x < -20) n.x = W + 20; else if (n.x > W + 20) n.x = -20;
+      if (n.y < -20) n.y = H + 20; else if (n.y > H + 20) n.y = -20;
+    });
 
     /* Constellation lines */
     ctx.strokeStyle = 'rgba(201,168,76,0.07)';
@@ -874,6 +891,14 @@
     stars.forEach(s => {
       s.a += s.va;
       if (s.a > 0.9 || s.a < 0.05) s.va *= -1;
+
+      if (s.drift) {
+        s.x += s.dvx;
+        s.y += s.dvy;
+        if (s.x < -5) s.x = W + 5; else if (s.x > W + 5) s.x = -5;
+        if (s.y < -5) s.y = H + 5; else if (s.y > H + 5) s.y = -5;
+      }
+
       ctx.beginPath(); ctx.arc(s.x + dx * s.p, s.y + dy * s.p, s.r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(210,198,255,${s.a})`; ctx.fill();
     });
