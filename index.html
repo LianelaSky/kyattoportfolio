@@ -24,8 +24,8 @@
     --gold-faint: rgba(201, 168, 76, 0.07);
     --lavender:   #ede6ff;
     --text:       #b8a8e0;
-    --muted:      #60508a;
-    --muted2:     #9070c0;
+    --muted:      #b8a8e0;
+    --muted2:     #b8a8e0;
     --card-bg:    rgba(255, 255, 255, 0.04);
     --border:     rgba(201, 168, 76, 0.2);
     --serif:      'Cinzel', serif;
@@ -242,6 +242,50 @@
 
   /* ── Trabajos ─────────────────────────────────────────────────── */
   #trabajos { padding: 100px 0; }
+
+  .creator-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+
+  .creator-group:not(:last-child) {
+    padding-bottom: 56px;
+    border-bottom: 0.5px solid var(--gold-dim);
+  }
+
+  .creator-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .creator-avatar {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 0.5px solid var(--border);
+    background: var(--sky-up);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: var(--serif);
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    color: var(--gold);
+  }
+  .creator-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .creator-name {
+    font-family: var(--serif);
+    font-size: clamp(1rem, 2.2vw, 1.3rem);
+    color: var(--lavender);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
 
   .projects-grid {
     display: grid;
@@ -481,6 +525,7 @@
     .nav-links { gap: 18px; }
     .nav-links a { font-size: 0.55rem; letter-spacing: 0.2em; }
     .projects-grid { grid-template-columns: 1fr; }
+    .creator-avatar { width: 44px; height: 44px; font-size: 0.75rem; }
     .about-grid { grid-template-columns: 1fr; }
     .about-photo { aspect-ratio: 1/1; max-width: 260px; margin: 0 auto; }
     .process-track { grid-template-columns: 1fr 1fr; }
@@ -536,88 +581,111 @@
     <h2 class="section-title">Trabajos</h2>
     <div class="divider"><span>✦ ✦ ✦</span></div>
 
-    <div class="projects-grid">
+    <!--
+      INSTRUCCIONES:
+      1. Cada .creator-group es un creador. Poné su nombre en .creator-name.
+      2. .creator-avatar: reemplazá el texto (iniciales) por <img src="URL_DE_LA_FOTO" alt="Nombre">
+         cuando tengas la foto real del creador.
+      3. Dentro de .projects-grid de cada grupo van sus videos (mismo formato de siempre).
+    -->
+    <div class="creator-groups">
+
+      <!-- Creador: Simon Sprunki -->
+      <div class="creator-group fade-in">
+        <div class="creator-header">
+          <div class="creator-avatar"><img src="https://yt3.googleusercontent.com/M98CX5wsy17209US5Dx-cIfIwsIbzz-OxigkYss2LyuuBYbJ2k_IHwtLnmzUypaHup7L0AYXPds=s160-c-k-c0x00ffffff-no-rj" alt="Simon Sprunki" loading="lazy"></div>
+          <h3 class="creator-name">Simon Sprunki</h3>
+        </div>
+        <div class="projects-grid">
+
+          <a href="https://www.youtube.com/watch?v=PGytRNYJ6bc" target="_blank" rel="noopener" class="project-card">
+            <div class="card-thumb">
+              <img src="https://i.ytimg.com/vi/PGytRNYJ6bc/hqdefault.jpg" alt="Simon Sprunki" loading="lazy">
+              <div class="card-play">▶</div>
+            </div>
+            <div class="card-body">
+              <span class="badge badge-gaming">GAMING</span>
+              <h3>Simon Sprunki</h3>
+              <p>YouTube · Video de Reacción</p>
+            </div>
+          </a>
+
+          <a href="https://www.youtube.com/watch?v=e-y7caoROuU" target="_blank" rel="noopener" class="project-card">
+            <div class="card-thumb">
+              <img src="https://i.ytimg.com/vi/e-y7caoROuU/hqdefault.jpg" alt="Simon Sprunki" loading="lazy">
+              <div class="card-play">▶</div>
+            </div>
+            <div class="card-body">
+              <span class="badge badge-gaming">GAMING</span>
+              <h3>Simon Sprunki</h3>
+              <p>YouTube · Video de Reacción</p>
+            </div>
+          </a>
+
+          <a href="https://www.youtube.com/watch?v=rltrWSNJI_Y" target="_blank" rel="noopener" class="project-card">
+            <div class="card-thumb">
+              <img src="https://i.ytimg.com/vi/rltrWSNJI_Y/hqdefault.jpg" alt="Simon Sprunki" loading="lazy">
+              <div class="card-play">▶</div>
+            </div>
+            <div class="card-body">
+              <span class="badge badge-gaming">GAMING</span>
+              <h3>Simon Sprunki</h3>
+              <p>YouTube · Video de Reacción</p>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- Creador: Galaxito -->
+      <div class="creator-group fade-in">
+        <div class="creator-header">
+          <div class="creator-avatar"><img src="https://yt3.googleusercontent.com/McTaUjb6FusRa_Qgk4dN4_Ns1QIAJDGGXhUwbKq0jO8OAnIu_JOM1XoFDrZOjGvqJxsjmzF0aQ=s160-c-k-c0x00ffffff-no-rj" alt="Galaxito" loading="lazy"></div>
+          <h3 class="creator-name">Galaxito</h3>
+        </div>
+        <div class="projects-grid">
+
+          <a href="https://www.youtube.com/watch?v=gyt3FRwlZ8E" target="_blank" rel="noopener" class="project-card">
+            <div class="card-thumb">
+              <img src="https://i.ytimg.com/vi/gyt3FRwlZ8E/hqdefault.jpg" alt="Galaxito" loading="lazy">
+              <div class="card-play">▶</div>
+            </div>
+            <div class="card-body">
+              <span class="badge badge-gaming">GAMING</span>
+              <h3>Galaxito</h3>
+              <p>YouTube · Video de Gameplay</p>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- Creador: elcapibe -->
+      <div class="creator-group fade-in">
+        <div class="creator-header">
+          <div class="creator-avatar"><img src="https://yt3.googleusercontent.com/XyVSp6ATeWlcm8QWM9okO_5In0t76HxkKwzFjUHO-uN65QCPBxPs8gC77ev9Fs-xP16zhNPF=s160-c-k-c0x00ffffff-no-rj" alt="elcapibe" loading="lazy"></div>
+          <h3 class="creator-name">elcapibe</h3>
+        </div>
+        <div class="projects-grid">
+
+          <a href="https://www.youtube.com/watch?v=kvzqi-AVIcI" target="_blank" rel="noopener" class="project-card">
+            <div class="card-thumb">
+              <img src="https://i.ytimg.com/vi/kvzqi-AVIcI/hqdefault.jpg" alt="elcapibe" loading="lazy">
+              <div class="card-play">▶</div>
+            </div>
+            <div class="card-body">
+              <span class="badge badge-gaming">GAMING</span>
+              <h3>elcapibe</h3>
+              <p>YouTube · Video de Gameplay</p>
+            </div>
+          </a>
+
+        </div>
+      </div>
 
       <!--
-        INSTRUCCIONES:
-        1. Reemplazá VIDEO_ID_X con el ID real de YouTube (lo que va después de ?v=)
-        2. Actualizá el badge, título y descripción de cada card
-        3. Las thumbnails se cargan automáticamente desde YouTube
-        4. Para el ID de video se utiliza: "https://i.ytimg.com/vi/ID-AQUÍ/hqdefault.jpg"
-      -->
-
-      <a href="https://www.youtube.com/watch?v=PGytRNYJ6bc" target="_blank" rel="noopener" class="project-card fade-in">
-        <div class="card-thumb">
-          <img src="https://i.ytimg.com/vi/PGytRNYJ6bc/hqdefault.jpg" alt="Sprunki Series" loading="lazy">
-          <div class="card-play">▶</div>
-        </div>
-        <div class="card-body">
-          <span class="badge badge-gaming">GAMING</span>
-          <h3>Simon Sprunki</h3>
-          <p>YouTube · Video de Reacción</p>
-        </div>
-      </a>
-
-      <a href="https://www.youtube.com/watch?v=e-y7caoROuU" target="_blank" rel="noopener" class="project-card fade-in">
-        <div class="card-thumb">
-          <img src="https://i.ytimg.com/vi/e-y7caoROuU/hqdefault.jpg" alt="Sprunki Series" loading="lazy">
-          <div class="card-play">▶</div>
-        </div>
-        <div class="card-body">
-          <span class="badge badge-inst">GAMING</span>
-          <h3>Simon Sprunki</h3>
-          <p>YouTube · Video de Reacción</p>
-        </div>
-      </a>
-
-      <a href="https://www.youtube.com/watch?v=rltrWSNJI_Y" target="_blank" rel="noopener" class="project-card fade-in">
-        <div class="card-thumb">
-          <img src="https://i.ytimg.com/vi/rltrWSNJI_Y/hqdefault.jpg" alt="Proyecto 3" loading="lazy">
-          <div class="card-play">▶</div>
-        </div>
-        <div class="card-body">
-          <span class="badge badge-content">GAMING</span>
-          <h3>Simon Sprunki</h3>
-          <p>YouTube · Video de Reacción</p>
-        </div>
-      </a>
-
-      <a href="https://www.youtube.com/watch?v=gyt3FRwlZ8E" target="_blank" rel="noopener" class="project-card fade-in">
-        <div class="card-thumb">
-          <img src="https://i.ytimg.com/vi/gyt3FRwlZ8E/hqdefault.jpg" alt="Proyecto 4" loading="lazy">
-          <div class="card-play">▶</div>
-        </div>
-        <div class="card-body">
-          <span class="badge badge-gaming">GAMING</span>
-          <h3>Galaxito</h3>
-          <p>YouTube · Video de Gameplay</p>
-        </div>
-      </a>
-
-      <a href="https://www.youtube.com/watch?v=kvzqi-AVIcI" target="_blank" rel="noopener" class="project-card fade-in">
-        <div class="card-thumb">
-          <img src="https://i.ytimg.com/vi/kvzqi-AVIcI/hqdefault.jpg" alt="Proyecto 5" loading="lazy">
-          <div class="card-play">▶</div>
-        </div>
-        <div class="card-body">
-          <span class="badge badge-content">GAMING</span>
-          <h3>elcapibe</h3>
-          <p>YouTube · Video de Gameplay</p>
-        </div>
-      </a>
-
-      <!--
-      <a href="https://www.youtube.com/watch?v=VIDEO_ID_6" target="_blank" rel="noopener" class="project-card fade-in">
-        <div class="card-thumb">
-          <img src="https://i.ytimg.com/vi/ID-AQUÍ/hqdefault.jpg" alt="Proyecto 6" loading="lazy">
-          <div class="card-play">▶</div>
-        </div>
-        <div class="card-body">
-          <span class="badge badge-inst">INSTITUCIONAL</span>
-          <h3>Nombre del Proyecto</h3>
-          <p>Descripción breve del proyecto</p>
-        </div>
-      </a>
+      Para agregar un creador nuevo, copiá un bloque .creator-group entero
+      y dentro copiá una <a class="project-card"> por cada video suyo.
       -->
 
     </div>
@@ -637,7 +705,7 @@
       </div>
       <div class="about-text">
         <h2>Hola, soy Kyatto Sky</h2>
-        <p>Editora de videos con foco en gaming, entretenimiento y proyectos Trabajo con YouTubers para darle vida a sus historias a través del video.</p>
+        <p>Editora de videos con foco en gaming, entretenimiento y proyectos institucionales. Trabajo con YouTubers para darle vida a sus historias a través del video.</p>
         <p>Tengo experiencia editando en Premiere Pro y After Effects, desde series de gaming con ritmo rápido con narrativa limpia y profesional.</p>
         <p>Si tenés un proyecto, te ayudo a que quede exactamente como lo imaginás.</p>
         <div class="skills-list">
@@ -695,12 +763,11 @@
     <div class="contact-inner fade-in">
       <p class="contact-intro">¿Tenés un proyecto? Escribime.</p>
 
-      <!-- Reemplazá con tu email real -->
-      <a href="mailto:tu@email.com" class="contact-email">lianelasky@gmail.com</a>
+      <a href="mailto:lianelasky@gmail.com" class="contact-email">lianelasky@gmail.com</a>
 
       <div class="social-links">
 
-        <a href="https://www.youtube.com/@kyatto510/" target="_blank" rel="noopener" aria-label="YouTube">
+        <a href="https://www.youtube.com/@kyatto510" target="_blank" rel="noopener" aria-label="YouTube">
           <svg viewBox="0 0 24 24"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.55A3.02 3.02 0 0 0 .5 6.19C0 8.04 0 12 0 12s0 3.96.5 5.81a3.02 3.02 0 0 0 2.12 2.14C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14C24 15.96 24 12 24 12s0-3.96-.5-5.81zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/></svg>
           YouTube
         </a>
@@ -744,30 +811,45 @@
 
   let W, H, stars, goldStars, nodes;
 
+  /* Mouse parallax state */
+  let targetX = 0, targetY = 0, curX = 0, curY = 0;
+
   function init() {
     W = canvas.width  = window.innerWidth;
     H = canvas.height = window.innerHeight;
+
+    targetX = curX = W / 2;
+    targetY = curY = H / 2;
 
     stars = Array.from({ length: 300 }, () => ({
       x: rng(0, W), y: rng(0, H),
       r: rng(0.2, 1.4),
       a: rng(0.1, 0.85),
-      va: rng(0.0008, 0.003) * (Math.random() > .5 ? 1 : -1)
+      va: rng(0.0008, 0.003) * (Math.random() > .5 ? 1 : -1),
+      p: rng(0.015, 0.05)
     }));
 
     goldStars = Array.from({ length: 20 }, () => ({
       x: rng(0, W), y: rng(0, H),
       r: rng(0.8, 2.0),
       a: rng(0.25, 0.65),
-      va: rng(0.0006, 0.002) * (Math.random() > .5 ? 1 : -1)
+      va: rng(0.0006, 0.002) * (Math.random() > .5 ? 1 : -1),
+      p: rng(0.04, 0.09)
     }));
 
     nodes = Array.from({ length: 24 }, () => ({
-      x: rng(0, W), y: rng(0, H)
+      x: rng(0, W), y: rng(0, H),
+      p: rng(0.01, 0.025)
     }));
   }
 
   function draw() {
+    /* Ease the parallax offset toward the mouse/touch target */
+    curX += (targetX - curX) * 0.04;
+    curY += (targetY - curY) * 0.04;
+    const dx = curX - W / 2;
+    const dy = curY - H / 2;
+
     ctx.clearRect(0, 0, W, H);
 
     /* Constellation lines */
@@ -775,14 +857,16 @@
     ctx.lineWidth = 0.5;
     for (let i = 0; i < nodes.length - 1; i++) {
       const a = nodes[i], b = nodes[i + 1];
-      if (Math.hypot(b.x - a.x, b.y - a.y) < 260) {
-        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      const ax = a.x + dx * a.p, ay = a.y + dy * a.p;
+      const bx = b.x + dx * b.p, by = b.y + dy * b.p;
+      if (Math.hypot(bx - ax, by - ay) < 260) {
+        ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
       }
     }
 
     /* Constellation node dots */
     nodes.forEach(n => {
-      ctx.beginPath(); ctx.arc(n.x, n.y, 1.4, 0, Math.PI * 2);
+      ctx.beginPath(); ctx.arc(n.x + dx * n.p, n.y + dy * n.p, 1.4, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(201,168,76,0.28)'; ctx.fill();
     });
 
@@ -790,7 +874,7 @@
     stars.forEach(s => {
       s.a += s.va;
       if (s.a > 0.9 || s.a < 0.05) s.va *= -1;
-      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.beginPath(); ctx.arc(s.x + dx * s.p, s.y + dy * s.p, s.r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(210,198,255,${s.a})`; ctx.fill();
     });
 
@@ -798,7 +882,7 @@
     goldStars.forEach(s => {
       s.a += s.va;
       if (s.a > 0.72 || s.a < 0.08) s.va *= -1;
-      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.beginPath(); ctx.arc(s.x + dx * s.p, s.y + dy * s.p, s.r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(201,168,76,${s.a})`; ctx.fill();
     });
 
@@ -810,6 +894,17 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(init, 150);
   });
+
+  window.addEventListener('mousemove', e => {
+    targetX = e.clientX;
+    targetY = e.clientY;
+  });
+  window.addEventListener('touchmove', e => {
+    if (e.touches && e.touches[0]) {
+      targetX = e.touches[0].clientX;
+      targetY = e.touches[0].clientY;
+    }
+  }, { passive: true });
 
   init();
   requestAnimationFrame(draw);
