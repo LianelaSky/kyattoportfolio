@@ -1,3 +1,133 @@
+
+Claude terminó la respuesta
+va, me está gustando, ahora, puedes hacer que las del fondo total (porque según veo hay frente, medio y traseras) que se muevan solas, porfa?
+
+por cierto, cambié esto para mejor visibilidad, actualizalo porfi ;^; 
+
+   --text:       
+#b8a8e0;
+    --muted:      
+#b8a8e0;
+    --muted2:     
+#b8a8e0;
+
+
+Validated styling and pivoted toward animating background elements
+Validated styling and pivoted toward animating background elements
+CSS ya está actualizado con esos valores. Ahora le agrego el movimiento autónomo a la capa de fondo:
+
+
+The user prompt is empty, so I cannot determine the primary language. However, based on the thinking block alone, here is a summary: Deliberated selective animation application for visual elements
+The user prompt is empty, so I cannot determine the primary language. However, based on the thinking block alone, here is a summary: Deliberated selective animation application for visual elements
+
+Agregar movimiento propio y lento a las estrellas de la capa trasera
+
+index.html
++14
+-7
+The user specifically asked for only the background stars to drift, not the constellation nodes or connecting lines, since those would distort the pattern. I'll keep the animation simple and apply the drift effect only to the small stars marked as background elements, which matches what they requested.
+
+
+Aplicar el movimiento propio de las estrellas de fondo en cada frame
+
+index.html
++15
+-7
+
+Actualizar el archivo final con el drift de fondo
+
+Script
+
+Presented file
+Listo
+Listo, dos cosas:
+
+Colores: ya estaban actualizados a 
+#b8a8e0 en --text, --muted y --muted2.
+Estrellas del fondo: las que tienen menos factor de parallax (las "traseras") ahora tienen una deriva propia, lenta, tipo flotando hacia arriba con leve vaivén horizontal — no dependen del mouse para moverse, siempre están vivas de fondo. Cuando salen de la pantalla por un borde, reaparecen del otro lado (wrap), así el efecto es continuo e infinito. Las capas media y frontal se quedan quietas salvo por el parallax del mouse, para que el contraste de profundidad se note bien.
+
+Index
+Código · HTML 
+
+index (2).html
+html
+
+este es el archivo final, hice un cambio, pero estaba pensando, en el sobre mi, podemos remover el borde donde se pone la imagen? es que tengo un logo sin fondo entonces así puedo poner sobre el logo y siento que se vería más clean
+
+
+Evaluó propiedades CSS y priorizó la solicitud del usuario
+Evaluó propiedades CSS y priorizó la solicitud del usuario
+Listo, saqué el borde. También cambié object-fit: cover por contain — con cover un logo transparente se podía llegar a recortar si no calza justo con el aspect-ratio 3/4 del contenedor; con contain se ve completo siempre, flotando limpio sobre el fondo de la sección sin ningún marco.
+
+
+Index
+Código · HTML 
+cuantos tipos de estrellas hay? en plan, por ejemplo a puro ojo veo 4 capas de estrellas, pero cuantas hay en realidad? porque si le atino a algo que tengo en mente podemos hacerlo mejor algo
+
+
+Desmenuzó estructura de estrellas y propuso mejoras visuales
+Desmenuzó estructura de estrellas y propuso mejoras visuales
+I should look at the actual star implementation to get an accurate count of the different layers and types involved.
+
+
+Revisar el código completo del canvas de estrellas
+
+Script
+I notice the code already has drifting nodes with velocity properties, which must have been added in a previous iteration. Looking at the actual structure, there are 300 lavender stars split into two categories based on a probability threshold—those below 0.028 are "back" stars that drift independently, while the rest remain stationary. So there are really three object types creating four visually distinct layers—the stars array splits into a drifting back group and a static mid group based on the parallax threshold, which aligns with what she's seeing. I should confirm this breakdown and ask what adjustments would better match her vision.
+
+Listo
+Mirando el código, hay 3 tipos de partículas en total, pero se comportan como 4 capas visuales distintas porque una de ellas se subdivide en dos por profundidad. Así queda:
+
+Nodos de constelación (24 puntos dorados tenues + líneas que los conectan) — parallax muy bajo (0.01–0.025) y ahora también flotan solos. Es la capa más "de fondo" conceptualmente.
+Estrellas lavanda traseras — son parte del mismo array de 300 estrellas, pero las que tienen menos parallax (p < 0.028) además tienen deriva propia (flotan hacia arriba con vaivén).
+Estrellas lavanda medias/frontales — el resto de esas 300, con más parallax (hasta 0.05) pero sin movimiento propio, solo reaccionan al mouse.
+Estrellas doradas — 20 en total, las más grandes (0.8–2px), con el parallax más fuerte (0.04–0.09) así se sienten más "cerca", pero tampoco tienen deriva propia, solo titilan y responden al mouse.
+Osea: 3 arrays de datos (stars, goldStars, nodes) pero 4 comportamientos de profundidad porque stars está partido a la mitad por un umbral (p < 0.028) en vez de ser su propio array.
+
+¿Qué tenías pensado? Si es algo tipo "que las doradas también floten solas" o "una quinta capa aún más al fondo, bien difuminada" o "que el umbral entre capas sea más marcado", contame la idea y lo armamos bien sobre esta base.
+
+okay, las lavandas pensaba que se acercaran al mouse ligeramente, es decir, que empezaran a juntarse todas cerca del mouse cuando lo vean y moverse lentamente al rededor de el, y el resto se muevan solas un poco más notorio, es decir, de 3 tipos, solo 1 realmente reaccione al mouse
+
+
+Verificó que la implementación ya cumplía los requisitos solicitados
+Verificó que la implementación ya cumplía los requisitos solicitados
+Che, mirando el código ya tenés implementado justo eso — de hecho el comentario en el código literalmente dice "la única que reacciona al mouse". Quedó armado así:
+
+Estrellas lavanda (las 300 chiquitas): son las únicas que reaccionan al mouse. Cuando el cursor entra en un radio de 170px, empiezan a acercarse suavemente hacia él (hasta un 50% de la distancia), y como el offset se recalcula cada frame seguido del mouse, terminan generando ese efecto de "juntarse y moverse alrededor" que buscabas.
+Estrellas doradas (20): flotan solas, ignoran completamente al mouse — derivan con una velocidad un poco más notoria (hasta 0.045 vertical) y hacen wrap-around en los bordes.
+Nodos de constelación (24): también flotan solos, mouse-independientes, con su propia velocidad.
+O sea: 3 tipos, 1 solo reacciona al mouse (lavanda), los otros 2 se mueven por su cuenta. Justo lo que pediste.
+
+Si querés ajustar la sensación, los números clave están acá arriba del todo del script:
+
+js
+const ATTRACT_RADIUS = 170;   // qué tan cerca del mouse empiezan a juntarse
+const ATTRACT_STRENGTH = 0.5; // qué tanto se acercan (0–1)
+¿Lo probaste ya y se siente bien, o querés que le suba el radio (que reaccionen desde más lejos) o la fuerza (que se peguen más al cursor)?
+
+es que digamos, se acercan pero no siguen al mouse, es decir, el punto es que estas empiecen a seguir el mouse, como si fuera una estela, no sé si me entiendes kjasjkask
+
+
+Desentrañó solicitud sobre comportamiento de seguimiento de cursor
+Desentrañó solicitud sobre comportamiento de seguimiento de cursor
+Ah sí, te entendí — antes solo se "inclinaban" hacia un punto calculado y quedaban ahí, no perseguían de verdad el movimiento. Ahora cambié la lógica: cada estrella lavanda tiene su propia velocidad de persecución (lag, entre 0.025 y 0.11), así que cuando el mouse entra en su radio, la estrella literalmente empieza a moverse hacia la posición del cursor cuadro a cuadro. Como cada una tiene una velocidad distinta, las más rápidas van pegadas al cursor y las más lentas se quedan atrás — eso arma la estela, como una cola de cometa que se estira cuando movés el mouse rápido.
+
+Cuando el mouse se aleja (pasado un radio un poco más grande, para que no titubeen justo en el borde), sueltan la persecución y derivan suavemente de vuelta a su posición original.
+
+Probalo moviendo el mouse rápido por la pantalla — deberías ver ese arrastre de cola. Si querés que la estela sea más larga/dramática, le puedo bajar el lag mínimo (que las lentas sean más lentas todavía); si la querés más ajustada al cursor, le subo el mínimo.
+
+
+Index
+Código · HTML 
+
+
+
+
+
+Claude es IA y puede cometer errores. Por favor, verifica nuevamente las respuestas.
+
+
+Index · HTML
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,11 +141,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
-
+ 
   <style>
   /* ── Reset & Variables ─────────────────────────────────────── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
   :root {
     --sky:        #090912;
     --sky-up:     #0f0b1e;
@@ -35,9 +165,9 @@
     --max-w:      1100px;
     --pad:        clamp(20px, 5vw, 60px);
   }
-
+ 
   html { scroll-behavior: smooth; }
-
+ 
   body {
     background: var(--sky);
     color: var(--text);
@@ -46,13 +176,13 @@
     line-height: 1.75;
     overflow-x: hidden;
   }
-
+ 
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: var(--sky); }
   ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
   ::selection { background: rgba(201, 168, 76, 0.2); color: var(--lavender); }
-
+ 
   /* ── Canvas ─────────────────────────────────────────────────── */
   #stars {
     position: fixed;
@@ -61,19 +191,19 @@
     z-index: 0;
     pointer-events: none;
   }
-
+ 
   /* ── Layout ─────────────────────────────────────────────────── */
   nav, main, footer { position: relative; z-index: 1; }
-
+ 
   .container {
     max-width: var(--max-w);
     margin: 0 auto;
     padding: 0 var(--pad);
   }
-
+ 
   section { border-bottom: 0.5px solid var(--gold-dim); }
   section:last-of-type { border-bottom: none; }
-
+ 
   /* ── Section headers ─────────────────────────────────────────── */
   .eyebrow {
     font-family: var(--serif);
@@ -84,7 +214,7 @@
     text-align: center;
     margin-bottom: 10px;
   }
-
+ 
   .section-title {
     font-family: var(--serif);
     font-size: clamp(1.4rem, 3vw, 2rem);
@@ -94,7 +224,7 @@
     text-align: center;
     margin-bottom: 14px;
   }
-
+ 
   .divider {
     display: flex;
     align-items: center;
@@ -110,7 +240,7 @@
     background: var(--gold-dim);
   }
   .divider span { font-size: 9px; color: var(--gold); letter-spacing: 4px; }
-
+ 
   /* ── Nav ─────────────────────────────────────────────────────── */
   nav {
     position: fixed;
@@ -126,7 +256,7 @@
     -webkit-backdrop-filter: blur(14px);
     border-bottom: 0.5px solid var(--gold-dim);
   }
-
+ 
   .nav-logo {
     font-family: var(--serif);
     font-size: 0.78rem;
@@ -136,7 +266,7 @@
     transition: color var(--trans);
   }
   .nav-logo:hover { color: var(--gold); }
-
+ 
   .nav-links {
     display: flex;
     gap: 32px;
@@ -152,7 +282,7 @@
     transition: color var(--trans);
   }
   .nav-links a:hover, .nav-links a.active { color: var(--gold); }
-
+ 
   /* ── Hero ─────────────────────────────────────────────────────── */
   #hero {
     min-height: 100vh;
@@ -163,7 +293,7 @@
     text-align: center;
     padding: calc(var(--nav-h) + 40px) var(--pad) 80px;
   }
-
+ 
   .hero-badge {
     font-family: var(--serif);
     font-size: 0.58rem;
@@ -181,7 +311,7 @@
     height: 0.5px;
     background: var(--gold-dim);
   }
-
+ 
   .hero-name {
     font-family: var(--serif);
     font-size: clamp(3rem, 9vw, 6rem);
@@ -191,7 +321,7 @@
     line-height: 1.05;
     margin-bottom: 18px;
   }
-
+ 
   .hero-tagline {
     font-family: var(--body);
     font-size: clamp(1rem, 2.5vw, 1.25rem);
@@ -200,9 +330,9 @@
     letter-spacing: 0.1em;
     margin-bottom: 48px;
   }
-
+ 
   .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
-
+ 
   .btn {
     font-family: var(--serif);
     font-size: 0.6rem;
@@ -221,7 +351,7 @@
   .btn-primary:hover { background: rgba(201,168,76,.1); transform: translateY(-2px); }
   .btn-secondary { border-color: var(--muted); color: var(--muted); background: transparent; }
   .btn-secondary:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
-
+ 
   .hero-scroll {
     margin-top: 64px;
     display: flex;
@@ -239,28 +369,28 @@
   }
   .hero-scroll-bar { width: 0.5px; height: 42px; background: var(--gold-dim); }
   @keyframes ks-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(9px); } }
-
+ 
   /* ── Trabajos ─────────────────────────────────────────────────── */
   #trabajos { padding: 100px 0; }
-
+ 
   .creator-groups {
     display: flex;
     flex-direction: column;
     gap: 56px;
   }
-
+ 
   .creator-group:not(:last-child) {
     padding-bottom: 56px;
     border-bottom: 0.5px solid var(--gold-dim);
   }
-
+ 
   .creator-header {
     display: flex;
     align-items: center;
     gap: 16px;
     margin-bottom: 24px;
   }
-
+ 
   .creator-avatar {
     width: 56px;
     height: 56px;
@@ -278,7 +408,7 @@
     color: var(--gold);
   }
   .creator-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
+ 
   .creator-name {
     font-family: var(--serif);
     font-size: clamp(1rem, 2.2vw, 1.3rem);
@@ -286,13 +416,13 @@
     font-weight: 700;
     letter-spacing: 0.05em;
   }
-
+ 
   .projects-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
   }
-
+ 
   .project-card {
     display: block;
     background: var(--card-bg);
@@ -303,7 +433,7 @@
     transition: border-color var(--trans), transform var(--trans);
   }
   .project-card:hover { border-color: var(--gold); transform: translateY(-5px); }
-
+ 
   .card-thumb {
     position: relative;
     aspect-ratio: 16/9;
@@ -317,7 +447,7 @@
     transition: transform var(--trans);
   }
   .project-card:hover .card-thumb img { transform: scale(1.05); }
-
+ 
   .card-play {
     position: absolute;
     inset: 0;
@@ -331,9 +461,9 @@
     color: rgba(237,230,255,.9);
   }
   .project-card:hover .card-play { opacity: 1; }
-
+ 
   .card-body { padding: 16px 18px 20px; }
-
+ 
   .badge {
     font-family: var(--serif);
     font-size: 0.55rem;
@@ -346,7 +476,7 @@
   .badge-gaming   { color: var(--gold);  border: 0.5px solid rgba(201,168,76,.4); }
   .badge-inst     { color: #6aacdc;      border: 0.5px solid rgba(106,172,220,.4); }
   .badge-content  { color: var(--muted2);border: 0.5px solid rgba(144,112,192,.4); }
-
+ 
   .card-body h3 {
     font-family: var(--serif);
     font-size: 0.88rem;
@@ -356,24 +486,23 @@
     margin-bottom: 5px;
   }
   .card-body p { font-size: 0.9rem; color: var(--muted); }
-
+ 
   /* ── Sobre mí ─────────────────────────────────────────────────── */
   #sobre-mi { padding: 100px 0; }
-
+ 
   .about-grid {
     display: grid;
     grid-template-columns: 1fr 1.7fr;
     gap: 64px;
     align-items: center;
   }
-
+ 
   .about-photo {
     aspect-ratio: 3/4;
-    border: 0.5px solid var(--border);
     border-radius: 5px;
     overflow: hidden;
   }
-  .about-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .about-photo img { width: 100%; height: 100%; object-fit: contain; display: block; }
   .about-photo-placeholder {
     width: 100%; height: 100%;
     background: var(--sky-up);
@@ -387,7 +516,7 @@
     text-align: center;
     padding: 20px;
   }
-
+ 
   .about-text h2 {
     font-family: var(--serif);
     font-size: clamp(1.15rem, 2.5vw, 1.55rem);
@@ -397,7 +526,7 @@
     margin-bottom: 22px;
   }
   .about-text p { color: var(--text); margin-bottom: 16px; font-size: 1.05rem; }
-
+ 
   .skills-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 30px; }
   .skill-tag {
     font-family: var(--serif);
@@ -410,10 +539,10 @@
     transition: background var(--trans);
   }
   .skill-tag:hover { background: var(--gold-faint); }
-
+ 
   /* ── Proceso ─────────────────────────────────────────────────── */
   #proceso { padding: 100px 0; }
-
+ 
   .process-track {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -430,9 +559,9 @@
     background: var(--gold-dim);
     z-index: 0;
   }
-
+ 
   .step { text-align: center; position: relative; z-index: 1; }
-
+ 
   .step-circle {
     width: 56px; height: 56px;
     border: 0.5px solid var(--border);
@@ -448,7 +577,7 @@
     transition: border-color var(--trans), color var(--trans);
   }
   .step:hover .step-circle { border-color: var(--gold); color: var(--gold); }
-
+ 
   .step-label {
     font-family: var(--serif);
     font-size: 0.62rem;
@@ -458,13 +587,13 @@
     margin-bottom: 10px;
   }
   .step p { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
-
+ 
   /* ── Contacto ─────────────────────────────────────────────────── */
   #contacto { padding: 100px 0; }
-
+ 
   .contact-inner { max-width: 600px; margin: 0 auto; text-align: center; }
   .contact-intro { color: var(--text); font-size: 1.1rem; font-style: italic; margin-bottom: 36px; }
-
+ 
   .contact-email {
     font-family: var(--serif);
     font-size: clamp(0.9rem, 2.2vw, 1.3rem);
@@ -478,7 +607,7 @@
     transition: color var(--trans), border-color var(--trans);
   }
   .contact-email:hover { color: var(--gold); border-color: var(--gold); }
-
+ 
   .social-links { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
   .social-links a {
     display: flex;
@@ -493,7 +622,7 @@
   }
   .social-links a:hover { color: var(--gold); }
   .social-links svg { width: 15px; height: 15px; fill: currentColor; flex-shrink: 0; }
-
+ 
   /* ── Footer ─────────────────────────────────────────────────── */
   footer {
     border-top: 0.5px solid var(--gold-dim);
@@ -510,7 +639,7 @@
     letter-spacing: 0.2em;
     color: var(--muted);
   }
-
+ 
   /* ── Fade-in on scroll ───────────────────────────────────────── */
   .fade-in {
     opacity: 0;
@@ -518,7 +647,7 @@
     transition: opacity 0.6s ease, transform 0.6s ease;
   }
   .fade-in.visible { opacity: 1; transform: translateY(0); }
-
+ 
   /* ── Responsive ──────────────────────────────────────────────── */
   @media (max-width: 768px) {
     .nav-logo { font-size: 0.68rem; }
@@ -532,7 +661,7 @@
     .process-track::before { display: none; }
     footer { justify-content: center; text-align: center; }
   }
-
+ 
   @media (max-width: 500px) {
     .nav-links { gap: 14px; }
     .hero-cta { flex-direction: column; align-items: center; }
@@ -540,12 +669,12 @@
   }
   </style>
 </head>
-
+ 
 <body>
-
+ 
 <!-- Star Canvas -->
 <canvas id="stars"></canvas>
-
+ 
 <!-- ─── Nav ──────────────────────────────────────────────────── -->
 <nav>
   <a href="#hero" class="nav-logo">KYATTO SKY</a>
@@ -556,9 +685,9 @@
     <li><a href="#contacto">Contacto</a></li>
   </ul>
 </nav>
-
+ 
 <main>
-
+ 
 <!-- ─── Hero ─────────────────────────────────────────────────── -->
 <section id="hero">
   <div class="hero-badge">✦ &nbsp; PORTFOLIO &nbsp; ✦</div>
@@ -573,14 +702,14 @@
     <div class="hero-scroll-bar"></div>
   </div>
 </section>
-
+ 
 <!-- ─── Trabajos ─────────────────────────────────────────────── -->
 <section id="trabajos">
   <div class="container">
     <span class="eyebrow">✦ &nbsp; MIS PROYECTOS &nbsp; ✦</span>
     <h2 class="section-title">Trabajos</h2>
     <div class="divider"><span>✦ ✦ ✦</span></div>
-
+ 
     <!--
       INSTRUCCIONES:
       1. Cada .creator-group es un creador. Poné su nombre en .creator-name.
@@ -589,7 +718,7 @@
       3. Dentro de .projects-grid de cada grupo van sus videos (mismo formato de siempre).
     -->
     <div class="creator-groups">
-
+ 
       <!-- Creador: Simon Sprunki -->
       <div class="creator-group fade-in">
         <div class="creator-header">
@@ -597,7 +726,7 @@
           <h3 class="creator-name">Simon Sprunki</h3>
         </div>
         <div class="projects-grid">
-
+ 
           <a href="https://www.youtube.com/watch?v=PGytRNYJ6bc" target="_blank" rel="noopener" class="project-card">
             <div class="card-thumb">
               <img src="https://i.ytimg.com/vi/PGytRNYJ6bc/hqdefault.jpg" alt="Simon Sprunki" loading="lazy">
@@ -609,7 +738,7 @@
               <p>YouTube · Video de Reacción</p>
             </div>
           </a>
-
+ 
           <a href="https://www.youtube.com/watch?v=e-y7caoROuU" target="_blank" rel="noopener" class="project-card">
             <div class="card-thumb">
               <img src="https://i.ytimg.com/vi/e-y7caoROuU/hqdefault.jpg" alt="Simon Sprunki" loading="lazy">
@@ -621,7 +750,7 @@
               <p>YouTube · Video de Reacción</p>
             </div>
           </a>
-
+ 
           <a href="https://www.youtube.com/watch?v=rltrWSNJI_Y" target="_blank" rel="noopener" class="project-card">
             <div class="card-thumb">
               <img src="https://i.ytimg.com/vi/rltrWSNJI_Y/hqdefault.jpg" alt="Simon Sprunki" loading="lazy">
@@ -633,10 +762,10 @@
               <p>YouTube · Video de Reacción</p>
             </div>
           </a>
-
+ 
         </div>
       </div>
-
+ 
       <!-- Creador: Galaxito -->
       <div class="creator-group fade-in">
         <div class="creator-header">
@@ -644,7 +773,7 @@
           <h3 class="creator-name">Galaxito</h3>
         </div>
         <div class="projects-grid">
-
+ 
           <a href="https://www.youtube.com/watch?v=gyt3FRwlZ8E" target="_blank" rel="noopener" class="project-card">
             <div class="card-thumb">
               <img src="https://i.ytimg.com/vi/gyt3FRwlZ8E/hqdefault.jpg" alt="Galaxito" loading="lazy">
@@ -656,10 +785,10 @@
               <p>YouTube · Video de Gameplay</p>
             </div>
           </a>
-
+ 
         </div>
       </div>
-
+ 
       <!-- Creador: elcapibe -->
       <div class="creator-group fade-in">
         <div class="creator-header">
@@ -667,7 +796,7 @@
           <h3 class="creator-name">elcapibe</h3>
         </div>
         <div class="projects-grid">
-
+ 
           <a href="https://www.youtube.com/watch?v=kvzqi-AVIcI" target="_blank" rel="noopener" class="project-card">
             <div class="card-thumb">
               <img src="https://i.ytimg.com/vi/kvzqi-AVIcI/hqdefault.jpg" alt="elcapibe" loading="lazy">
@@ -679,29 +808,29 @@
               <p>YouTube · Video de Gameplay</p>
             </div>
           </a>
-
+ 
         </div>
       </div>
-
+ 
       <!--
       Para agregar un creador nuevo, copiá un bloque .creator-group entero
       y dentro copiá una <a class="project-card"> por cada video suyo.
       -->
-
+ 
     </div>
   </div>
 </section>
-
+ 
 <!-- ─── Sobre mí ──────────────────────────────────────────────── -->
 <section id="sobre-mi">
   <div class="container">
     <span class="eyebrow">✦ &nbsp; QUIÉN SOY &nbsp; ✦</span>
     <h2 class="section-title">Sobre mí</h2>
     <div class="divider"><span>✦ ✦ ✦</span></div>
-
+ 
     <div class="about-grid fade-in">
       <div class="about-photo">
-        <img src="https://i.ibb.co/FLyc64LZ/bg-web.png" alt="Kyatto Sky" loading="lazy">
+        <img src="https://i.ibb.co/d40vfFK9/kyatto.png" alt="Kyatto Sky" loading="lazy">
       </div>
       <div class="about-text">
         <h2>Hola, soy Kyatto Sky</h2>
@@ -720,14 +849,14 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- ─── Proceso ──────────────────────────────────────────────── -->
 <section id="proceso">
   <div class="container">
     <span class="eyebrow">✦ &nbsp; CÓMO TRABAJO &nbsp; ✦</span>
     <h2 class="section-title">Mi Proceso</h2>
     <div class="divider"><span>✦ ✦ ✦</span></div>
-
+ 
     <div class="process-track">
       <div class="step fade-in">
         <div class="step-circle">I</div>
@@ -752,54 +881,54 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- ─── Contacto ─────────────────────────────────────────────── -->
 <section id="contacto">
   <div class="container">
     <span class="eyebrow">✦ &nbsp; HABLEMOS &nbsp; ✦</span>
     <h2 class="section-title">Contacto</h2>
     <div class="divider"><span>✦ ✦ ✦</span></div>
-
+ 
     <div class="contact-inner fade-in">
       <p class="contact-intro">¿Tenés un proyecto? Escribime.</p>
-
+ 
       <a href="mailto:lianelasky@gmail.com" class="contact-email">lianelasky@gmail.com</a>
-
+ 
       <div class="social-links">
-
+ 
         <a href="https://www.youtube.com/@kyatto510" target="_blank" rel="noopener" aria-label="YouTube">
           <svg viewBox="0 0 24 24"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.55A3.02 3.02 0 0 0 .5 6.19C0 8.04 0 12 0 12s0 3.96.5 5.81a3.02 3.02 0 0 0 2.12 2.14C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14C24 15.96 24 12 24 12s0-3.96-.5-5.81zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/></svg>
           YouTube
         </a>
-
+ 
         <a href="https://instagram.com/kyattosky" target="_blank" rel="noopener" aria-label="Instagram">
           <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
           Instagram
         </a>
-
+ 
         <a href="https://x.com/k_ttor" target="_blank" rel="noopener" aria-label="X">
           <svg viewBox="0 0 24 24"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
           X
         </a>
-
+ 
         <a href="https://tiktok.com/@kyattosky" target="_blank" rel="noopener" aria-label="TikTok">
           <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
           TikTok
         </a>
-
+ 
       </div>
     </div>
   </div>
 </section>
-
+ 
 </main>
-
+ 
 <!-- ─── Footer ────────────────────────────────────────────────── -->
 <footer>
   <p>© 2026 KYATTO SKY</p>
   <p>VIDEO EDITOR &amp; CONTENT CREATOR</p>
 </footer>
-
+ 
 <!-- ─── JS ────────────────────────────────────────────────────── -->
 <script>
 /* === STAR CANVAS === */
@@ -808,118 +937,135 @@
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   const rng = (a, b) => Math.random() * (b - a) + a;
-
+ 
   let W, H, stars, goldStars, nodes;
-
-  /* Mouse parallax state */
+ 
+  /* Mouse position, eased for smoothness */
   let targetX = 0, targetY = 0, curX = 0, curY = 0;
-
+ 
+  const ATTRACT_RADIUS = 170;    // qué tan cerca del mouse empiezan a "engancharse"
+  const RELEASE_RADIUS = 230;    // un poco más grande, para que no titubeen en el borde
+  const RETURN_EASE    = 0.02;   // qué tan rápido vuelven a su lugar al soltarse
+ 
   function init() {
     W = canvas.width  = window.innerWidth;
     H = canvas.height = window.innerHeight;
-
+ 
     targetX = curX = W / 2;
     targetY = curY = H / 2;
-
+ 
+    /* Lavender stars — the only type that reacts to the mouse.
+       Each one has its own chase speed (lag), so when they latch onto
+       the cursor they trail behind it like a comet's wake instead of
+       just leaning toward a fixed offset. */
     stars = Array.from({ length: 300 }, () => {
-      const p = rng(0.015, 0.05);
-      const isBack = p < 0.028; /* capa trasera: se mueve sola además del parallax */
+      const x = rng(0, W), y = rng(0, H);
       return {
-        x: rng(0, W), y: rng(0, H),
+        x, y, x0: x, y0: y,
         r: rng(0.2, 1.4),
         a: rng(0.1, 0.85),
         va: rng(0.0008, 0.003) * (Math.random() > .5 ? 1 : -1),
-        p,
-        drift: isBack,
-        dvx: isBack ? rng(-0.035, 0.035) : 0,
-        dvy: isBack ? rng(-0.02, -0.06) : 0
+        lag: rng(0.025, 0.11),
+        chasing: false
       };
     });
-
+ 
+    /* Gold accent stars — drift on their own, ignore the mouse */
     goldStars = Array.from({ length: 20 }, () => ({
       x: rng(0, W), y: rng(0, H),
       r: rng(0.8, 2.0),
       a: rng(0.25, 0.65),
       va: rng(0.0006, 0.002) * (Math.random() > .5 ? 1 : -1),
-      p: rng(0.04, 0.09)
+      vx: rng(-0.025, 0.025),
+      vy: rng(-0.015, -0.045)
     }));
-
+ 
+    /* Constellation nodes — drift on their own, ignore the mouse */
     nodes = Array.from({ length: 24 }, () => ({
       x: rng(0, W), y: rng(0, H),
-      p: rng(0.01, 0.025),
       vx: rng(-0.04, 0.04),
       vy: rng(-0.04, 0.04)
     }));
   }
-
+ 
+  function wrap(p, min, max, margin) {
+    if (p.x < -margin) p.x = W + margin; else if (p.x > W + margin) p.x = -margin;
+    if (p.y < -margin) p.y = H + margin; else if (p.y > H + margin) p.y = -margin;
+  }
+ 
   function draw() {
-    /* Ease the parallax offset toward the mouse/touch target */
-    curX += (targetX - curX) * 0.04;
-    curY += (targetY - curY) * 0.04;
-    const dx = curX - W / 2;
-    const dy = curY - H / 2;
-
+    curX += (targetX - curX) * 0.15;
+    curY += (targetY - curY) * 0.15;
+ 
     ctx.clearRect(0, 0, W, H);
-
-    /* Drift the back layer (constellation) on its own, independent of the mouse */
+ 
+    /* Drift the constellation on its own */
     nodes.forEach(n => {
       n.x += n.vx;
       n.y += n.vy;
-      if (n.x < -20) n.x = W + 20; else if (n.x > W + 20) n.x = -20;
-      if (n.y < -20) n.y = H + 20; else if (n.y > H + 20) n.y = -20;
+      wrap(n, W, H, 20);
     });
-
+ 
     /* Constellation lines */
     ctx.strokeStyle = 'rgba(201,168,76,0.07)';
     ctx.lineWidth = 0.5;
     for (let i = 0; i < nodes.length - 1; i++) {
       const a = nodes[i], b = nodes[i + 1];
-      const ax = a.x + dx * a.p, ay = a.y + dy * a.p;
-      const bx = b.x + dx * b.p, by = b.y + dy * b.p;
-      if (Math.hypot(bx - ax, by - ay) < 260) {
-        ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
+      if (Math.hypot(b.x - a.x, b.y - a.y) < 260) {
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
       }
     }
-
+ 
     /* Constellation node dots */
     nodes.forEach(n => {
-      ctx.beginPath(); ctx.arc(n.x + dx * n.p, n.y + dy * n.p, 1.4, 0, Math.PI * 2);
+      ctx.beginPath(); ctx.arc(n.x, n.y, 1.4, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(201,168,76,0.28)'; ctx.fill();
     });
-
-    /* Stars */
+ 
+    /* Lavender stars — chase the mouse like a trailing wake when it's near,
+       and drift gently back home once it moves away */
     stars.forEach(s => {
       s.a += s.va;
       if (s.a > 0.9 || s.a < 0.05) s.va *= -1;
-
-      if (s.drift) {
-        s.x += s.dvx;
-        s.y += s.dvy;
-        if (s.x < -5) s.x = W + 5; else if (s.x > W + 5) s.x = -5;
-        if (s.y < -5) s.y = H + 5; else if (s.y > H + 5) s.y = -5;
+ 
+      const ddx = curX - s.x, ddy = curY - s.y;
+      const dist = Math.hypot(ddx, ddy);
+ 
+      if (dist < ATTRACT_RADIUS) s.chasing = true;
+      else if (dist > RELEASE_RADIUS) s.chasing = false;
+ 
+      if (s.chasing) {
+        s.x += ddx * s.lag;
+        s.y += ddy * s.lag;
+      } else {
+        s.x += (s.x0 - s.x) * RETURN_EASE;
+        s.y += (s.y0 - s.y) * RETURN_EASE;
       }
-
-      ctx.beginPath(); ctx.arc(s.x + dx * s.p, s.y + dy * s.p, s.r, 0, Math.PI * 2);
+ 
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(210,198,255,${s.a})`; ctx.fill();
     });
-
-    /* Gold accent stars */
+ 
+    /* Gold accent stars — drift on their own */
     goldStars.forEach(s => {
       s.a += s.va;
       if (s.a > 0.72 || s.a < 0.08) s.va *= -1;
-      ctx.beginPath(); ctx.arc(s.x + dx * s.p, s.y + dy * s.p, s.r, 0, Math.PI * 2);
+      s.x += s.vx;
+      s.y += s.vy;
+      wrap(s, W, H, 10);
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(201,168,76,${s.a})`; ctx.fill();
     });
-
+ 
     requestAnimationFrame(draw);
   }
-
+ 
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(init, 150);
   });
-
+ 
   window.addEventListener('mousemove', e => {
     targetX = e.clientX;
     targetY = e.clientY;
@@ -930,11 +1076,11 @@
       targetY = e.touches[0].clientY;
     }
   }, { passive: true });
-
+ 
   init();
   requestAnimationFrame(draw);
 })();
-
+ 
 /* === SMOOTH SCROLL === */
 document.querySelectorAll('a[href^="#"]').forEach(link => {
   link.addEventListener('click', e => {
@@ -942,7 +1088,7 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
   });
 });
-
+ 
 /* === NAV ACTIVE ON SCROLL === */
 const sections  = document.querySelectorAll('section[id]');
 const navLinks  = document.querySelectorAll('.nav-links a');
@@ -956,7 +1102,7 @@ const navObserver = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.4 });
 sections.forEach(s => navObserver.observe(s));
-
+ 
 /* === FADE-IN ON SCROLL === */
 const fadeObserver = new IntersectionObserver(entries => {
   entries.forEach(entry => {
@@ -968,6 +1114,6 @@ const fadeObserver = new IntersectionObserver(entries => {
 }, { threshold: 0.15 });
 document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
 </script>
-
+ 
 </body>
 </html>
