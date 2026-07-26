@@ -12,6 +12,18 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
  
+  <script>
+  /* Evita el flash del español si ya hay un idioma guardado: oculta
+     el body hasta que el script del final aplique la traducción. */
+  (function () {
+    try {
+      if (localStorage.getItem('ks_lang')) {
+        document.documentElement.classList.add('lang-loading');
+      }
+    } catch (e) {}
+  })();
+  </script>
+ 
   <style>
   /* ── Reset & Variables ─────────────────────────────────────── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -537,10 +549,112 @@
     .hero-cta { flex-direction: column; align-items: center; }
     .process-track { grid-template-columns: 1fr 1fr; gap: 28px; }
   }
+
+  /* ── Language Gate ──────────────────────────────────────────── */
+  html.lang-loading body { visibility: hidden; }
+
+  #lang-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(9, 9, 18, 0.97);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    padding: 20px;
+    text-align: center;
+    transition: opacity 0.45s ease, visibility 0.45s ease;
+  }
+  #lang-gate.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  #lang-gate.no-anim { transition: none; }
+
+  .lang-gate-badge {
+    font-family: var(--serif);
+    font-size: 0.56rem;
+    letter-spacing: 0.4em;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .lang-gate-badge::before, .lang-gate-badge::after {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 0.5px;
+    background: var(--gold-dim);
+  }
+
+  .lang-gate-title {
+    font-family: var(--serif);
+    font-size: clamp(1.6rem, 5vw, 2.4rem);
+    font-weight: 700;
+    color: var(--lavender);
+    letter-spacing: 0.1em;
+  }
+
+  .lang-gate-sub {
+    font-family: var(--body);
+    font-style: italic;
+    color: var(--muted2);
+    font-size: 1rem;
+    letter-spacing: 0.03em;
+    margin-top: -10px;
+  }
+
+  .lang-gate-options { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+
+  .lang-option {
+    font-family: var(--serif);
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: transparent;
+    border: 0.5px solid var(--gold-dim);
+    padding: 15px 38px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: border-color var(--trans), color var(--trans),
+                background var(--trans), transform var(--trans);
+  }
+  .lang-option:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-faint); transform: translateY(-2px); }
+
+  /* ── Language switch (nav) ───────────────────────────────────── */
+  .lang-switch { display: flex; align-items: center; gap: 6px; }
+  .lang-switch-btn {
+    font-family: var(--serif);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: color var(--trans);
+  }
+  .lang-switch-btn:hover { color: var(--gold); }
+  .lang-switch-btn.active { color: var(--gold); }
+  .lang-switch-sep { color: var(--gold-dim); font-size: 0.6rem; }
   </style>
 </head>
  
 <body>
+ 
+<!-- ─── Selector de idioma ───────────────────────────────────── -->
+<div id="lang-gate">
+  <div class="lang-gate-badge">✦ &nbsp; WELCOME · BIENVENIDA &nbsp; ✦</div>
+  <h1 class="lang-gate-title">KYATTO SKY</h1>
+  <p class="lang-gate-sub">Choose your language &nbsp;·&nbsp; Elegí tu idioma</p>
+  <div class="lang-gate-options">
+    <button type="button" class="lang-option" data-lang="es">Español</button>
+    <button type="button" class="lang-option" data-lang="en">English</button>
+  </div>
+</div>
  
 <!-- Star Canvas -->
 <canvas id="stars"></canvas>
@@ -549,10 +663,13 @@
 <nav>
   <a href="#hero" class="nav-logo">KYATTO SKY</a>
   <ul class="nav-links">
-    <li><a href="#trabajos">Trabajos</a></li>
-    <li><a href="#sobre-mi">Sobre mí</a></li>
-    <li><a href="#proceso">Proceso</a></li>
-    <li><a href="#contacto">Contacto</a></li>
+    <li><a href="#trabajos" data-en="Work">Trabajos</a></li>
+    <li><a href="#sobre-mi" data-en="About">Sobre mí</a></li>
+    <li><a href="#proceso" data-en="Process">Proceso</a></li>
+    <li><a href="#contacto" data-en="Contact">Contacto</a></li>
+    <li class="lang-switch">
+      <button type="button" class="lang-switch-btn active" data-lang="es">ES</button><span class="lang-switch-sep">/</span><button type="button" class="lang-switch-btn" data-lang="en">EN</button>
+    </li>
   </ul>
 </nav>
  
@@ -562,10 +679,10 @@
 <section id="hero">
   <div class="hero-badge">✦ &nbsp; PORTFOLIO &nbsp; ✦</div>
   <h1 class="hero-name">KYATTO SKY</h1>
-  <p class="hero-tagline">editora de video &amp; animadora </p>
+  <p class="hero-tagline" data-en="video editor &amp; animator">editora de video &amp; animadora </p>
   <div class="hero-cta">
-    <a href="#trabajos" class="btn btn-primary">Ver trabajos</a>
-    <a href="#contacto" class="btn btn-secondary">Contactar</a>
+    <a href="#trabajos" class="btn btn-primary" data-en="View work">Ver trabajos</a>
+    <a href="#contacto" class="btn btn-secondary" data-en="Contact">Contactar</a>
   </div>
   <div class="hero-scroll">
     <span>SCROLL</span>
@@ -576,8 +693,8 @@
 <!-- ─── Trabajos ─────────────────────────────────────────────── -->
 <section id="trabajos">
   <div class="container">
-    <span class="eyebrow">✦ &nbsp; MIS PROYECTOS &nbsp; ✦</span>
-    <h2 class="section-title">Trabajos</h2>
+    <span class="eyebrow" data-en="✦ &nbsp; MY PROJECTS &nbsp; ✦">✦ &nbsp; MIS PROYECTOS &nbsp; ✦</span>
+    <h2 class="section-title" data-en="Work">Trabajos</h2>
     <div class="divider"><span>✦ ✦ ✦</span></div>
  
     <!--
@@ -605,7 +722,7 @@
             <div class="card-body">
               <span class="badge badge-gaming">GAMING</span>
               <h3>Simon Sprunki</h3>
-              <p>YouTube · Video de Reacción</p>
+              <p data-en="YouTube · Reaction Video">YouTube · Video de Reacción</p>
             </div>
           </a>
  
@@ -617,7 +734,7 @@
             <div class="card-body">
               <span class="badge badge-gaming">GAMING</span>
               <h3>Simon Sprunki</h3>
-              <p>YouTube · Video de Reacción</p>
+              <p data-en="YouTube · Reaction Video">YouTube · Video de Reacción</p>
             </div>
           </a>
  
@@ -629,7 +746,7 @@
             <div class="card-body">
               <span class="badge badge-gaming">GAMING</span>
               <h3>Simon Sprunki</h3>
-              <p>YouTube · Video de Reacción</p>
+              <p data-en="YouTube · Reaction Video">YouTube · Video de Reacción</p>
             </div>
           </a>
  
@@ -652,7 +769,7 @@
             <div class="card-body">
               <span class="badge badge-gaming">GAMING</span>
               <h3>Galaxito</h3>
-              <p>YouTube · Video de Gameplay</p>
+              <p data-en="YouTube · Gameplay Video">YouTube · Video de Gameplay</p>
             </div>
           </a>
  
@@ -675,7 +792,7 @@
             <div class="card-body">
               <span class="badge badge-gaming">GAMING</span>
               <h3>elcapibe</h3>
-              <p>YouTube · Video de Gameplay</p>
+              <p data-en="YouTube · Gameplay Video">YouTube · Video de Gameplay</p>
             </div>
           </a>
  
@@ -698,7 +815,7 @@
             <div class="card-body">
               <span class="badge badge-gaming">GAMING</span>
               <h3>Queen NovaStar</h3>
-              <p>TikTok · Video de Gameplay</p>
+              <p data-en="TikTok · Gameplay Video">TikTok · Video de Gameplay</p>
             </div>
           </a>
  
@@ -738,8 +855,8 @@
 <!-- ─── Sobre mí ──────────────────────────────────────────────── -->
 <section id="sobre-mi">
   <div class="container">
-    <span class="eyebrow">✦ &nbsp; QUIÉN SOY &nbsp; ✦</span>
-    <h2 class="section-title">Sobre mí</h2>
+    <span class="eyebrow" data-en="✦ &nbsp; WHO I AM &nbsp; ✦">✦ &nbsp; QUIÉN SOY &nbsp; ✦</span>
+    <h2 class="section-title" data-en="About Me">Sobre mí</h2>
     <div class="divider"><span>✦ ✦ ✦</span></div>
  
     <div class="about-grid fade-in">
@@ -747,10 +864,10 @@
         <img src="https://i.ibb.co/d40vfFK9/kyatto.png" alt="Kyatto Sky" loading="lazy">
       </div>
       <div class="about-text">
-        <h2>Hola, soy Kyatto Sky</h2>
-        <p>Editora de videos con foco en gaming, entretenimiento y proyectos institucionales. Trabajo con YouTubers para darle vida a sus historias a través del video.</p>
-        <p>Tengo experiencia editando en Premiere Pro y After Effects, desde series de gaming con ritmo rápido con narrativa limpia y profesional.</p>
-        <p>Si tenés un proyecto, te ayudo a que quede exactamente como lo imaginás.</p>
+        <h2 data-en="Hi, I'm Kyatto Sky">Hola, soy Kyatto Sky</h2>
+        <p data-en="Video editor focused on gaming, entertainment, and institutional projects. I work with YouTubers to bring their stories to life through video.">Editora de videos con foco en gaming, entretenimiento y proyectos institucionales. Trabajo con YouTubers para darle vida a sus historias a través del video.</p>
+        <p data-en="I have experience editing in Premiere Pro and After Effects, from fast-paced gaming series to clean, professional narrative work.">Tengo experiencia editando en Premiere Pro y After Effects, desde series de gaming con ritmo rápido con narrativa limpia y profesional.</p>
+        <p data-en="If you've got a project, I'll help make it turn out exactly how you picture it.">Si tenés un proyecto, te ayudo a que quede exactamente como lo imaginás.</p>
         <div class="skills-list">
           <span class="skill-tag">PREMIERE PRO</span>
           <span class="skill-tag">AFTER EFFECTS</span>
@@ -767,30 +884,30 @@
 <!-- ─── Proceso ──────────────────────────────────────────────── -->
 <section id="proceso">
   <div class="container">
-    <span class="eyebrow">✦ &nbsp; CÓMO TRABAJO &nbsp; ✦</span>
-    <h2 class="section-title">Mi Proceso</h2>
+    <span class="eyebrow" data-en="✦ &nbsp; HOW I WORK &nbsp; ✦">✦ &nbsp; CÓMO TRABAJO &nbsp; ✦</span>
+    <h2 class="section-title" data-en="My Process">Mi Proceso</h2>
     <div class="divider"><span>✦ ✦ ✦</span></div>
  
     <div class="process-track">
       <div class="step fade-in">
         <div class="step-circle">I</div>
         <span class="step-label">BRIEF</span>
-        <p>Entendemos el proyecto, el tono que buscás y los tiempos de entrega.</p>
+        <p data-en="We go over the project, the tone you're after, and the delivery timeline.">Entendemos el proyecto, el tono que buscás y los tiempos de entrega.</p>
       </div>
       <div class="step fade-in">
         <div class="step-circle">II</div>
-        <span class="step-label">EDICIÓN</span>
-        <p>Armo un primer corte con la estructura, ritmo y estética del video.</p>
+        <span class="step-label" data-en="EDITING">EDICIÓN</span>
+        <p data-en="I put together a first cut with the structure, pacing, and look of the video.">Armo un primer corte con la estructura, ritmo y estética del video.</p>
       </div>
       <div class="step fade-in">
         <div class="step-circle">III</div>
-        <span class="step-label">REVISIÓN</span>
-        <p>Te mando el borrador, recibo tu feedback y ajusto todos los detalles.</p>
+        <span class="step-label" data-en="REVIEW">REVISIÓN</span>
+        <p data-en="I send you the draft, get your feedback, and fine-tune every detail.">Te mando el borrador, recibo tu feedback y ajusto todos los detalles.</p>
       </div>
       <div class="step fade-in">
         <div class="step-circle">IV</div>
-        <span class="step-label">ENTREGA</span>
-        <p>Archivo final en el formato y resolución que necesitás, listo para subir.</p>
+        <span class="step-label" data-en="DELIVERY">ENTREGA</span>
+        <p data-en="Final file in the format and resolution you need, ready to upload.">Archivo final en el formato y resolución que necesitás, listo para subir.</p>
       </div>
     </div>
   </div>
@@ -799,12 +916,12 @@
 <!-- ─── Contacto ─────────────────────────────────────────────── -->
 <section id="contacto">
   <div class="container">
-    <span class="eyebrow">✦ &nbsp; HABLEMOS &nbsp; ✦</span>
-    <h2 class="section-title">Contacto</h2>
+    <span class="eyebrow" data-en="✦ &nbsp; LET'S TALK &nbsp; ✦">✦ &nbsp; HABLEMOS &nbsp; ✦</span>
+    <h2 class="section-title" data-en="Contact">Contacto</h2>
     <div class="divider"><span>✦ ✦ ✦</span></div>
  
     <div class="contact-inner fade-in">
-      <p class="contact-intro">¿Tenés un proyecto? Escribime.</p>
+      <p class="contact-intro" data-en="Have a project? Get in touch.">¿Tenés un proyecto? Escribime.</p>
  
       <a href="mailto:lianelasky@gmail.com" class="contact-email">lianelasky@gmail.com</a>
  
@@ -1028,6 +1145,76 @@ const fadeObserver = new IntersectionObserver(entries => {
 }, { threshold: 0.15 });
 document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
 </script>
- 
+
+<!-- === LANGUAGE GATE === -->
+<script>
+(function () {
+  const STORAGE_KEY = 'ks_lang';
+  const gate = document.getElementById('lang-gate');
+  const htmlEl = document.documentElement;
+
+  const metaText = {
+    es: {
+      title: 'Kyatto Sky — Editora de Videos',
+      description: 'Portfolio de Kyatto Sky — Editora de Videos y Animadora',
+      ogTitle: 'Kyatto Sky — Editora de Video',
+      ogDescription: 'Edición de videos para creadores de contenido.'
+    },
+    en: {
+      title: 'Kyatto Sky — Video Editor',
+      description: 'Kyatto Sky Portfolio — Video Editor and Animator',
+      ogTitle: 'Kyatto Sky — Video Editor',
+      ogDescription: 'Video editing for content creators.'
+    }
+  };
+
+  function applyLang(lang) {
+    htmlEl.lang = lang;
+
+    document.querySelectorAll('[data-en]').forEach(el => {
+      if (el.dataset.es === undefined) el.dataset.es = el.innerHTML;
+      el.innerHTML = lang === 'en' ? el.dataset.en : el.dataset.es;
+    });
+
+    const m = metaText[lang];
+    document.title = m.title;
+    const descTag = document.querySelector('meta[name="description"]');
+    if (descTag) descTag.setAttribute('content', m.description);
+    const ogTitleTag = document.querySelector('meta[property="og:title"]');
+    if (ogTitleTag) ogTitleTag.setAttribute('content', m.ogTitle);
+    const ogDescTag = document.querySelector('meta[property="og:description"]');
+    if (ogDescTag) ogDescTag.setAttribute('content', m.ogDescription);
+
+    document.querySelectorAll('.lang-switch-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+  }
+
+  let saved = null;
+  try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+
+  if (saved === 'es' || saved === 'en') {
+    /* Ya eligió idioma antes: se traduce y se oculta el popup sin animación */
+    applyLang(saved);
+    gate.classList.add('no-anim', 'hidden');
+    htmlEl.classList.remove('lang-loading');
+  } else {
+    /* Primera visita: el popup ya está visible, bloqueamos el scroll de fondo */
+    document.body.style.overflow = 'hidden';
+  }
+
+  document.querySelectorAll('.lang-option, .lang-switch-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.dataset.lang;
+      applyLang(lang);
+      try { localStorage.setItem(STORAGE_KEY, lang); } catch (e) {}
+      gate.classList.add('hidden');
+      htmlEl.classList.remove('lang-loading');
+      document.body.style.overflow = '';
+    });
+  });
+})();
+</script>
+
 </body>
 </html>
